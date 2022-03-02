@@ -6,8 +6,6 @@
 
 class TraceRules;
 
-// TODO: 指定した関数だけAPIの中に入る
-
 struct MemAddrSize {
     ADDRINT addr;
     size_t size;

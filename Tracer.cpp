@@ -1410,18 +1410,6 @@ VOID Tracer::_AnalysisInsFirst(ADDRINT pc, CONTEXT *ctx)
 
     _dispInitMessage();
 
-    /*
-    // PEB から kernel32.dll のベースアドレスを取得する例
-    int fs, PEB, ldr, p1, p2, p3, base;
-    fs = PIN_GetContextReg(ctx, REG_SEG_FS_BASE);
-    PEB = *(ADDRINT *)(fs + 0x30);
-    ldr = *(ADDRINT *)(PEB + 0x0C);
-    p1 = *(ADDRINT *)(ldr + 0x14);
-    p2 = *(ADDRINT *)(pl);
-    p3 = *(ADDRINT *)(p2);
-    base = *(ADDRINT *)(p3+0x10);
-    */
-
     ADDRINT pFS, pPEB;
     UINT32 zero = 0, two = 2;
 
@@ -1440,14 +1428,12 @@ VOID Tracer::_AnalysisInsFirst(ADDRINT pc, CONTEXT *ctx)
         ADDRINT* ProcessHeap, * PatchAddr;
         ProcessHeap = (ADDRINT*)(*(ADDRINT*)pPEB + 0x18);
 
-        //PatchAddr = (ADDRINT *)(*ProcessHeap + 0x0C); // OS による？
         PatchAddr = (ADDRINT*)(*ProcessHeap + 0x40);
         if (*PatchAddr != 2) {
             gConsole.outInfo("Modified PEB.ProcessHeap+0x0C: " + to_hex(*PatchAddr) + " -> 2\n");
             PIN_SafeCopy(PatchAddr, &two, 4);
         }
 
-        //PatchAddr = (ADDRINT *)(*ProcessHeap + 0x10); // OS による？
         PatchAddr = (ADDRINT*)(*ProcessHeap + 0x44);
         if (*PatchAddr != 0) {
             gConsole.outInfo("Modified PEB.ProcessHeap+0x10: " + to_hex(*PatchAddr) + " -> 0\n");
