@@ -38,8 +38,8 @@ KNOB<string> KnobFilterRtn(               KNOB_MODE_APPEND,    "pintool", "Fr", 
 KNOB<string> KnobFilterRange(             KNOB_MODE_APPEND,    "pintool", "Fa", "", "Address range to filter (e.g. 400000-408000)");
 KNOB<BOOL> KnobFilterBeforeEntryPoint(    KNOB_MODE_WRITEONCE, "pintool", "Fe", "0", "Filter before entry point (Start from entry point)");
 KNOB<BOOL> KnobFilterBeforeMainImage(     KNOB_MODE_WRITEONCE, "pintool", "Fm", "0", "Filter before main image (Start from main image)");
-KNOB<BOOL> KnobFilterBeforeStart(         KNOB_MODE_WRITEONCE, "pintool", "Fs", "0", "Filter before defined address (Start from defined address)");
-KNOB<BOOL> KnobFilterAfterEnd(            KNOB_MODE_WRITEONCE, "pintool", "Fd", "0", "Filter after defined address (End in defined address)");
+KNOB<string> KnobFilterBeforeStart(       KNOB_MODE_APPEND,    "pintool", "Fs", "", "Filter before defined address (Start from defined address)");
+KNOB<string> KnobFilterAfterEnd(          KNOB_MODE_APPEND,    "pintool", "Fd", "", "Filter after defined address (End in defined address)");
 KNOB<BOOL> KnobFilterExceptApi(           KNOB_MODE_WRITEONCE, "pintool", "Fx", "0", "Filter all instructions (Log only API call)");
 
 // Trace
@@ -323,13 +323,13 @@ BOOL Options::getOptions(int argc, char **argv)
         isFilteringInsideApi = false;
     }
 
-    if (KnobFilterBeforeStart) {
+    if (!KnobFilterBeforeStart.ValueString().empty()) {
         startAddress = from_hex(KnobFilterBeforeStart.ValueString());
-        isStartingFromEntryPoint = true;
+        //isStartingFromEntryPoint = true;
         isFilteringInsideApi = false;
     }
 
-    if (KnobFilterAfterEnd) {
+    if (!KnobFilterAfterEnd.ValueString().empty()) {
         endAddress = from_hex(KnobFilterAfterEnd.ValueString());
     }
 

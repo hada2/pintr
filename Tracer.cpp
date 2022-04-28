@@ -1492,7 +1492,9 @@ VOID Tracer::_AnalysisApiCall(ADDRINT rtnAddr,
         }
     }
 
-    _tiManager.setTiRetAddr(tid, retAddr, rtnName);
+    if (gOpt.isFilteringInsideApi) {
+        _tiManager.setTiRetAddr(tid, retAddr, rtnName);
+    }
 }
 
 VOID Tracer::_AnalysisException()
@@ -1576,7 +1578,6 @@ VOID Tracer::_enableTracingIfStart(ADDRINT pc)
 
     if (gOpt.startAddress) {
         if (pc == gOpt.startAddress) {
-
             _tiManager.setTiTracingEnabled(tid, true);
 
             if (gOpt.isStartingFromEntryPoint) {
