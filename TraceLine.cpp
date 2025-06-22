@@ -22,8 +22,8 @@ string TraceLine::genLine()
     if (_logCount == 0)
         return "";
 
-    if (gOpt.printLogCount) str += APPEND_DELIM(to_string(_logCount), DELIM);
-    if (gOpt.printTime)     str += APPEND_DELIM(to_string(_time), DELIM);
+    if (gOpt.printLogCount) str += APPEND_DELIM(std::to_string(_logCount), DELIM);
+    if (gOpt.printTime)     str += APPEND_DELIM(std::to_string(_time), DELIM);
 
     str += APPEND_DELIM(_colImgName, DELIM);
     str += APPEND_DELIM(_colApiName, DELIM);

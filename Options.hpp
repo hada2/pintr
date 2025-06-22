@@ -41,6 +41,7 @@ public:
 
     // mode
     BOOL modeMainThreadOnly;
+    BOOL modeFilterExceptJump;
     BOOL modeApiOnly;
     BOOL modeMagicDetect;
     BOOL modeCryptApiDetect;

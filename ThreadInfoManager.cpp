@@ -34,7 +34,7 @@ BOOL ThreadInfoManager::initThreadInfoMap(PIN_THREAD_UID tid)
 {
     if (!_existThreadInfo(tid)) {
         if (_isSubThread(tid)) {
-            gConsole.outInfo("New thread is detected (tid=" + to_string(tid) + ")\n");
+            gConsole.outInfo("New thread is detected (tid=" + std::to_string(tid) + ")\n");
         }
 
         if (gOpt.modeMainThreadOnly) {
@@ -82,11 +82,11 @@ string ThreadInfoManager::_getTracefileName(PIN_THREAD_UID tid)
     string sub;
 
     if (_pid) {
-        sub += "-child" + to_string(_pid);
+        sub += "-child" + std::to_string(_pid);
     }
 
     if (_isSubThread(tid)) {
-        sub += "-th" + to_string(tid);
+        sub += "-th" + std::to_string(tid);
     }
 
     return gOpt.tracefileBaseName + sub + ".log";
@@ -172,6 +172,13 @@ VOID ThreadInfoManager::pushTiPcHistory(PIN_THREAD_UID tid, ADDRINT pc)
     ThreadInfo* ti = _mapThreadInfo[tid];
     assert(ti);
     ti->pushPcHistory(pc);
+}
+
+ADDRINT ThreadInfoManager::getTiLastPcHistory(PIN_THREAD_UID tid)
+{
+    ThreadInfo* ti = _mapThreadInfo[tid];
+    assert(ti);
+    return ti->getPcHistory(1);
 }
 
 UINT32 ThreadInfoManager::getTiInsCount(PIN_THREAD_UID tid)

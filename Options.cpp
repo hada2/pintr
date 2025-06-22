@@ -40,6 +40,7 @@ KNOB<BOOL> KnobFilterBeforeEntryPoint(    KNOB_MODE_WRITEONCE, "pintool", "Fe", 
 KNOB<BOOL> KnobFilterBeforeMainImage(     KNOB_MODE_WRITEONCE, "pintool", "Fm", "0", "Filter before main image (Start from main image)");
 KNOB<string> KnobFilterBeforeStart(       KNOB_MODE_APPEND,    "pintool", "Fs", "", "Filter before defined address (Start from defined address)");
 KNOB<string> KnobFilterAfterEnd(          KNOB_MODE_APPEND,    "pintool", "Fd", "", "Filter after defined address (End in defined address)");
+KNOB<BOOL> KnobFilterExceptJump(          KNOB_MODE_WRITEONCE, "pintool", "Fj", "0", "Filter except jcc instructions");
 KNOB<BOOL> KnobFilterExceptApi(           KNOB_MODE_WRITEONCE, "pintool", "Fx", "0", "Filter all instructions (Log only API call)");
 
 // Trace
@@ -86,7 +87,7 @@ KNOB<BOOL> KnobTraceFileName(             KNOB_MODE_WRITEONCE, "pintool", "o",  
 
 Options::Options()
 {
-    tracefileBaseName = "trace-" + to_string(getNowTime() % 100000);
+    tracefileBaseName = "trace-" + std::to_string(getNowTime() % 100000);
 
     isFilteringInsideApi = true;
     isFilteringInsideApiOrg = true;
@@ -101,6 +102,7 @@ Options::Options()
 
     verboseLevel = VERBOSE_NORMAL;
     modeMainThreadOnly = false;
+    modeFilterExceptJump = false;
     modeApiOnly = false;
     modeMagicDetect = false;
     modeCryptApiDetect = false;
@@ -203,7 +205,8 @@ string Options::getSettingsForDisplay()
     {
         str += " [Mode]\n";
         str += PADDING("   Log file (base)")    + tracefileBaseName + string("\n");
-        str += PADDING("   Verbose level")      + to_string(verboseLevel) + string("\n");
+        str += PADDING("   Verbose level")      + std::to_string(verboseLevel) + string("\n");
+        str += PADDING("   Filter except jump") + string(modeFilterExceptJump ? "Yes" : "No") + string("\n");
         str += PADDING("   Only API")           + string(modeApiOnly        ? "Yes" : "No") + string("\n");
         str += PADDING("   Only main thread")   + string(modeMainThreadOnly ? "Yes" : "No") + string("\n");
         str += PADDING("   Detect crypt magic") + string(modeMagicDetect    ? "Yes" : "No") + string("\n");
@@ -235,8 +238,8 @@ string Options::getSettingsForDisplay()
     // Others
     {
         str += " [Others]\n";
-        str += PADDING("   Time Limit") + (traceExitTimeLimit ? to_string(traceExitTimeLimit) + " ms\n" : "-\n");
-        str += PADDING("   Ins Limit") + (traceExitInsLimit ? to_string(traceExitInsLimit) + " ins\n" : "-\n");
+        str += PADDING("   Time Limit") + (traceExitTimeLimit ? std::to_string(traceExitTimeLimit) + " ms\n" : "-\n");
+        str += PADDING("   Ins Limit") + (traceExitInsLimit ? std::to_string(traceExitInsLimit) + " ins\n" : "-\n");
     }
 
     return str + "\n";
@@ -344,6 +347,10 @@ BOOL Options::getOptions(int argc, char **argv)
     if (!KnobFilterRange.ValueString().empty()) {
         vector<string> args = split(KnobFilterRange.ValueString(), '-');
         traceRules.appendFilterRangeList(from_hex(args[0]), from_hex(args[1]));
+    }
+
+    if (KnobFilterExceptJump) {
+        modeFilterExceptJump = true;
     }
 
     if (KnobFilterExceptApi) {

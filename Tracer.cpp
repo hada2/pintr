@@ -199,6 +199,15 @@ BOOL Tracer::_isFiltered(ADDRINT pc)
     if (_tiManager.filterTiUntilReturnAddr(tid, pc))
         return true;
 
+    if (gOpt.modeFilterExceptJump) {
+        ADDRINT lastPc = _tiManager.getTiLastPcHistory(tid);
+
+        if (_disasCache.getDissas(pc).find("j") != 0 &&
+            _disasCache.getDissas(lastPc).find("j") != 0) {
+            return true;
+        }
+    }
+
     if (gOpt.modeApiOnly) {
         if (!contain(_disasCache.getDissas(pc), "call")) {
             return true;
@@ -403,7 +412,7 @@ string Tracer::_genMemColumn(const ADDRINT memAddr, const size_t memSize)
 {
     string str;
 
-    str += to_hex(memAddr) + "_" + to_string(memSize) + "_";
+    str += to_hex(memAddr) + "_" + std::to_string(memSize) + "_";
 
     switch (memSize) {
     case 1:
@@ -1428,12 +1437,14 @@ VOID Tracer::_AnalysisInsFirst(ADDRINT pc, CONTEXT *ctx)
         ADDRINT* ProcessHeap, * PatchAddr;
         ProcessHeap = (ADDRINT*)(*(ADDRINT*)pPEB + 0x18);
 
+        //PatchAddr = (ADDRINT *)(*ProcessHeap + 0x0C); // depends on OS 
         PatchAddr = (ADDRINT*)(*ProcessHeap + 0x40);
         if (*PatchAddr != 2) {
             gConsole.outInfo("Modified PEB.ProcessHeap+0x0C: " + to_hex(*PatchAddr) + " -> 2\n");
             PIN_SafeCopy(PatchAddr, &two, 4);
         }
 
+        //PatchAddr = (ADDRINT *)(*ProcessHeap + 0x10); // depends on OS
         PatchAddr = (ADDRINT*)(*ProcessHeap + 0x44);
         if (*PatchAddr != 0) {
             gConsole.outInfo("Modified PEB.ProcessHeap+0x10: " + to_hex(*PatchAddr) + " -> 0\n");
@@ -1461,7 +1472,8 @@ VOID Tracer::_AnalysisApiCall(ADDRINT rtnAddr,
     }
     
     string imgName = _getImgName(rtnAddr);
-    // 3通りできてしまった
+    
+    // 3 ways to get the rtn_name
     //string rtnName = _rtnCache.getRtn(rtnAddr);
     //string rtnName = RTN_FindNameByAddress(rtnAddr);
     string rtnName = _getRtnName(rtnAddr);
@@ -1471,7 +1483,7 @@ VOID Tracer::_AnalysisApiCall(ADDRINT rtnAddr,
                         imgName + " #" + rtnName + " " +
                         "#ret=" + to_hex(retAddr);
 
-    _tiManager.writeTiTracefile(tid, msgApiCall);
+    //_tiManager.writeTiTracefile(tid, msgApiCall);
     gConsole.outInfo(msgApiCall + "\n", VERBOSE_INFO);
 
     string allRegs = " #" + _genRegGeneral(ctx);
@@ -1479,8 +1491,8 @@ VOID Tracer::_AnalysisApiCall(ADDRINT rtnAddr,
     if (gOpt.printRegXmm) { allRegs += "_" + _genRegXmm(ctx); }
     if (gOpt.printRegYmm) { allRegs += "_" + _genRegYmm(ctx); }
     
-    _tiManager.writeTiTracefile(tid, allRegs);
-    _tiManager.writeTiTracefile(tid, "\n");
+    //_tiManager.writeTiTracefile(tid, allRegs);
+    //_tiManager.writeTiTracefile(tid, "\n");
 
     if (gOpt.traceRules.inDetectApiList(rtnName)) {
         gConsole.outInfo("#API found: " + rtnName + "\n");
@@ -1655,7 +1667,7 @@ VOID Tracer::AfterForkInChild(THREADID threadid, const CONTEXT* ctx, VOID* arg)
         _tiManager.refreshTiTracefile(tid);
     }
 
-    gConsole.outInfo("Child process is created: " + to_string(pid) + "\n");
+    gConsole.outInfo("Child process is created: " + std::to_string(pid) + "\n");
 }
 
 VOID Tracer::Finalize(INT32 code, VOID *v)

@@ -36,6 +36,7 @@ public:
     VOID incTiInsCount(PIN_THREAD_UID);
     VOID incTiLogCount(PIN_THREAD_UID);
     VOID pushTiPcHistory(PIN_THREAD_UID, ADDRINT);
+    ADDRINT getTiLastPcHistory(PIN_THREAD_UID);
 
     VOID setPid(UINT32);
     VOID setMainTid(PIN_THREAD_UID);

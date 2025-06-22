@@ -53,7 +53,7 @@ template<typename T> std::string to_HEX(const T& n, UINT64 width = 0) {
     }
 
     string str = stm.str();
-    transform(str.begin(), str.end(), str.begin(), toupper);
+    transform(str.begin(), str.end(), str.begin(), [](unsigned char c) { return std::toupper(c); });
 
     return str;
 }

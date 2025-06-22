@@ -1,0 +1,15 @@
+.vs/*
+obj-intel64/*
+sample/*
+test/*
+
+*.log
+*.dll
+*.exe
+*.bin
+*.i64
+*.sln
+*.bat
+*.code-workspace
+
+
