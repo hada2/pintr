@@ -15,10 +15,11 @@ This is a rough and experimental tool developed for CTF and malware analysis. A 
 
 ## Install
 ### Linux
+
 * Download and expand [Intel Pin](https://www.intel.com/content/www/us/en/developer/articles/tool/pin-a-binary-instrumentation-tool-downloads.html).
 * Set the path.
-    * `$ export PATH=$PATH;[PATH_TO_PIN_ROOT]`
-    * `$ export PIN_ROOT=[PATH_TO_PIN_ROOT]`
+    * `$ export PATH="$PATH;[PATH_TO_PIN_ROOT]"`
+    * `$ export PIN_ROOT="[PATH_TO_PIN_ROOT]"`
 * Run make.
     * `$ cd pintr`
     * `$ make`
@@ -27,13 +28,15 @@ This is a rough and experimental tool developed for CTF and malware analysis. A 
 
 ### Windows
 
-* Install `make` (e.g. [Cygwin](https://www.cygwin.com/) or [Make for Windows](http://gnuwin32.sourceforge.net/packages/make.htm)).
+* Install [Visual Studio](https://visualstudio.microsoft.com/) and [Cygwin](https://www.cygwin.com/).
 * Download and expand [Intel Pin](https://www.intel.com/content/www/us/en/developer/articles/tool/pin-a-binary-instrumentation-tool-downloads.html).
+* Launch the Visual Studio Developer Command Prompt. 
 * Set the path.
-    * `$ SET PATH=%PATH%;[PATH_TO_MAKE]`
+    * `$ SET PATH=%PATH%;[PATH_TO_CYGWIN_BIN]`
+        * e.g. `$ SET PATH=%PATH%;C:\cygwin64\bin`
     * `$ SET PATH=%PATH%;[PATH_TO_PIN_ROOT]`
     * `$ SET PIN_ROOT=[PATH_TO_PIN_ROOT]`
-        * e.g. `SET PIN_ROOT=C:/pin-3.21` (Note: not backslash but slash)
+        * e.g. `SET PIN_ROOT=C:/pin-3.31` (Note: not backslash but slash)
 * Run make.
     * `$ cd pintr`
     * `$ make`
